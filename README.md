@@ -4,7 +4,7 @@ Deterministic, prompt-protected random KV-cache eviction for reasoning models.
 
 [![CI](https://github.com/DaBestCode/randkv/actions/workflows/ci.yml/badge.svg)](https://github.com/DaBestCode/randkv/actions/workflows/ci.yml)
 
-> **Status: early Hugging Face milestone.** The framework-independent policy
+> **Status: v0.1 Hugging Face milestone.** The framework-independent policy
 > and a batch-size-one Transformers 5.16 cache adapter are implemented. vLLM,
 > batched generation, and optimized kernels are not implemented; no throughput
 > claim is made yet.

@@ -6,4 +6,4 @@ from .policy import RandomEvictionPolicy
 from .protocols import KVPolicy
 
 __all__ = ["KVPolicy", "PolicyStats", "RandKVConfig", "RandomEvictionPolicy"]
-__version__ = "0.1.0rc1"
+__version__ = "0.1.0"
