@@ -13,8 +13,13 @@ Create the development environment:
 
 ```bash
 python -m venv .venv
-.venv/bin/python -m pip install -e ".[transformers,test]" build
+.venv/bin/python -m pip install ".[transformers,test]" build
 ```
+
+Some Python 3.13 distributions skip hidden `.pth` files produced by editable
+build backends. Use a regular local install as shown above; reinstall after
+changing package source. CI also installs from the built project rather than
+editable metadata.
 
 Run the required checks:
 
@@ -29,4 +34,3 @@ Run the required checks:
 Backend changes must include tests for prompt retention, deterministic
 selection, cache bounds, and unsupported input behavior. GPU optimizations must
 retain a tested PyTorch fallback.
-

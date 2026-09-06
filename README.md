@@ -83,8 +83,25 @@ sliding, chunked, or linear-attention layers fail explicitly.
 Run a real-checkpoint smoke test (downloads the model from Hugging Face):
 
 ```bash
-.venv/bin/python scripts/smoke_transformers.py --model Qwen/Qwen3-0.6B
+.venv/bin/python scripts/smoke_transformers.py \
+  --model Qwen/Qwen3-0.6B \
+  --budget 512 \
+  --buffer-size 64 \
+  --max-new-tokens 640 \
+  --output-json results/qwen3-0.6b-smoke.json
 ```
+
+The JSON result records exact PyTorch and Transformers versions, device,
+budget, buffer, seed, physical cache lengths, eviction counts, and throughput.
+
+Here `budget` is the persistent budget `K`, not the instantaneous tensor size.
+Immediately after eviction the cache contains `K + r` positions. Between
+rounds it can grow to `K + 2r - 1` before the next `r`-token buffer triggers
+compaction.
+
+Recorded smoke results live in [`results/`](results/README.md). They validate
+compatibility and eviction invariants; they are not comparative benchmarks.
+
 
 ## Test
 
