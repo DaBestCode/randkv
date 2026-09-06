@@ -1,0 +1,15 @@
+RandKV
+Copyright 2026 RandKV contributors
+
+RandKV independently implements the method described in:
+
+  Random Attention: Rethinking KV Cache Eviction for Efficient Reasoning
+  Heng Wang et al., 2026
+  https://arxiv.org/abs/2609.03430
+
+The authors' Apache-2.0 reference implementation is available at:
+
+  https://github.com/SalesforceAIResearch/Random-Attention
+
+RandKV is not an official Salesforce project.
+
