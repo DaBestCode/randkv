@@ -149,7 +149,9 @@ class RandomEvictionPolicy:
                 str(kv_head),
             )
         ).encode()
-        return int.from_bytes(hashlib.blake2b(material, digest_size=16).digest())
+        return int.from_bytes(
+            hashlib.blake2b(material, digest_size=16).digest(), byteorder="big"
+        )
 
     @staticmethod
     def _validate(
