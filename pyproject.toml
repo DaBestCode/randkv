@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "randkv"
-version = "0.1.0.dev0"
+version = "0.1.0rc1"
 description = "Deterministic, prompt-protected random KV-cache eviction"
 readme = "README.md"
 requires-python = ">=3.10"

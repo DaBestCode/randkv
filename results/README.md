@@ -20,3 +20,17 @@ The final physical size is between eviction boundaries. The periodic policy
 returns to `K + r = 40` positions after each round and may grow as high as
 `K + 2r - 1 = 47` before the next compaction.
 
+## Dense vs RandKV Transformers microbenchmark
+
+- Result: [`qwen3-0.6b-mps-microbenchmark.json`](qwen3-0.6b-mps-microbenchmark.json)
+- Protocol: one warm-up per mode, three alternating-order trials, 128 generated
+  tokens per trial, synchronized MPS timing
+- Dense median: 38.53 tokens/second
+- RandKV median: 35.48 tokens/second
+- RandKV/dense throughput: 0.921x
+- Final RandKV physical cache: 46 positions per layer after 143 total tokens
+
+This single-request Apple M4 measurement is compatibility and adapter-overhead
+evidence only. The current Python gather path is slower than dense generation in
+this test. It is not a vLLM serving benchmark, a CUDA-kernel benchmark, or a
+model-quality evaluation, and it does not validate the paper's throughput claim.

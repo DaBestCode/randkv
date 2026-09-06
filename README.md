@@ -102,6 +102,21 @@ compaction.
 Recorded smoke results live in [`results/`](results/README.md). They validate
 compatibility and eviction invariants; they are not comparative benchmarks.
 
+Run the local dense-versus-RandKV microbenchmark:
+
+```bash
+.venv/bin/python scripts/benchmark_transformers.py \
+  --model Qwen/Qwen3-0.6B \
+  --budget 32 \
+  --buffer-size 8 \
+  --max-new-tokens 128 \
+  --trials 3 \
+  --output-json results/qwen3-0.6b-mps-microbenchmark.json
+```
+
+This measures single-request adapter overhead. It is not evidence for the
+paper's vLLM serving-throughput claim.
+
 
 ## Test
 
