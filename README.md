@@ -3,6 +3,8 @@
 Deterministic, prompt-protected random KV-cache eviction for reasoning models.
 
 [![CI](https://github.com/DaBestCode/randkv/actions/workflows/ci.yml/badge.svg)](https://github.com/DaBestCode/randkv/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/randkv.svg)](https://pypi.org/project/randkv/)
+[![Python](https://img.shields.io/pypi/pyversions/randkv.svg)](https://pypi.org/project/randkv/)
 
 > **Status: v0.1 Hugging Face milestone.** The framework-independent policy
 > and a batch-size-one Transformers 5.16 cache adapter are implemented. vLLM,
