@@ -1,0 +1,41 @@
+name: Feature proposal
+description: Propose a focused policy, adapter, evaluation, or documentation change
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: Describe the concrete limitation or user workflow.
+    validations:
+      required: true
+  - type: textarea
+    id: call_site
+    attributes:
+      label: Proposed call site
+      description: Show the smallest user-facing API or command first.
+      render: python
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Include correctness, compatibility, and test expectations.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence or prior art
+      description: Link papers, upstream APIs, profiles, or reproducible measurements.
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope checks
+      options:
+        - label: I searched existing issues and pull requests.
+          required: true
+        - label: I will not present paper-reported numbers as RandKV measurements.
+          required: true

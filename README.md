@@ -6,10 +6,43 @@ Deterministic, prompt-protected random KV-cache eviction for reasoning models.
 [![PyPI](https://img.shields.io/pypi/v/randkv.svg)](https://pypi.org/project/randkv/)
 [![Python](https://img.shields.io/pypi/pyversions/randkv.svg)](https://pypi.org/project/randkv/)
 
+## 60-second quickstart
+
+```bash
+pip install randkv
+```
+
+```python
+from randkv import RandomEvictionPolicy
+
+retained = RandomEvictionPolicy().select(range(5000), prompt_length=128)
+print(len(retained))  # 2112
+```
+
+The zero-config policy keeps the complete prompt, a recent 64-token buffer, and
+a deterministic random sample under a persistent 2,048-position budget.
+
+For an already loaded Hugging Face model, the integration call site is:
+
+```python
+from randkv.transformers import generate
+
+output = generate(model, **inputs, max_new_tokens=4096)
+```
+
 > **Status: v0.1 Hugging Face milestone.** The framework-independent policy
 > and a batch-size-one Transformers 5.16 cache adapter are implemented. vLLM,
 > batched generation, and optimized kernels are not implemented; no throughput
 > claim is made yet.
+
+| Capability | Status |
+| --- | --- |
+| Dependency-free eviction policy | Supported |
+| Transformers 5.16 cache adapter | Supported for batch size one |
+| Greedy and sampled generation | Supported |
+| Beam search and batched generation | Not yet supported |
+| Sliding, chunked, and linear attention | Not yet supported |
+| vLLM backend and optimized GPU kernels | Not yet implemented |
 
 ## Policy quickstart
 
@@ -44,10 +77,6 @@ eviction, layer, and head identity, so concurrent callers do not share mutable
 random-number-generator state.
 
 ## Hugging Face
-
-```bash
-pip install "randkv[transformers]"
-```
 
 Use the one-call generation adapter:
 
@@ -119,6 +148,15 @@ Run the local dense-versus-RandKV microbenchmark:
 This measures single-request adapter overhead. It is not evidence for the
 paper's vLLM serving-throughput claim.
 
+| Qwen3-0.6B, Apple M4, 128 generated tokens | Median tokens/s |
+| --- | ---: |
+| Dense Transformers cache | 38.53 |
+| RandKV PyTorch compaction | 35.48 |
+
+The measured RandKV/dense ratio is `0.921x`. Publishing the slower result is
+intentional: it isolates current Python gather overhead and prevents a local
+microbenchmark from being presented as serving-throughput evidence. The full
+machine-readable result and protocol are in [`results/`](results/README.md).
 
 ## Test
 
@@ -127,6 +165,17 @@ The policy core has no runtime dependencies:
 ```bash
 PYTHONPATH=src python -m unittest discover -s tests -v
 ```
+
+## Architecture
+
+| Fragile DIY integration | RandKV |
+| --- | --- |
+| Token scoring in the decode path | No importance scores |
+| Shared mutable RNG state | Deterministic request/layer/head seeds |
+| Physical cache length reused as token position | Absolute position tracked separately from compacted length |
+| One retention mask for every KV head | Independent sample per KV head |
+| Silent behavior on unsupported attention types | Explicit validation failures |
+| Ad hoc benchmark output | Versioned, machine-readable results |
 
 ## Method
 
@@ -139,3 +188,13 @@ A recent buffer is excluded from selection until the next eviction event.
 
 RandKV is an independent packaging and integration project. It is not an
 official Salesforce project.
+
+## Roadmap and contributing
+
+The official performance launch is gated on a matched quality evaluation and a
+reproducible NVIDIA/vLLM serving benchmark. See [`ROADMAP.md`](ROADMAP.md) for
+the launch criteria and current work packages.
+
+New contributors can start with a
+[`good first issue`](https://github.com/DaBestCode/randkv/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
+Read [`CONTRIBUTING.md`](CONTRIBUTING.md) before opening a pull request.
