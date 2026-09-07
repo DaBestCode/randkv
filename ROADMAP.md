@@ -13,7 +13,7 @@ vLLM throughput result.
 - [ ] Validate benchmark artifacts against a versioned schema.
 - [ ] Add an offline end-to-end Transformers integration test.
 - [ ] Measure task quality at matched dense and RandKV token budgets.
-- [ ] Implement and test a vLLM-compatible policy/backend boundary.
+- [x] Implement and test a vLLM-compatible policy/backend boundary.
 - [ ] Benchmark dense, random eviction, and at least one scored selector on an
       NVIDIA GPU under the same model, request distribution, and cache budget.
 - [ ] Publish peak-memory, throughput, latency, and quality results with raw
