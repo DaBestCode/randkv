@@ -17,34 +17,24 @@ def load_json(path: Path):
 
 def test_qwen3_result_matches_benchmark_v1_schema():
     schema = load_json(SCHEMA_PATH)
+    Draft202012Validator.check_schema(schema)
+
     data = load_json(QWEN_RESULT_PATH)
     validator = Draft202012Validator(schema)
     errors = sorted(validator.iter_errors(data), key=lambda e: list(e.path))
     assert errors == [], [e.message for e in errors]
 
 
-REQUIRED_FIELDS = [
-    "schema_version",
-    "claim_scope",
-    "model",
-    "model_revision",
-    "device",
-    "runs",
-    "summary",
-    "kind",
-    "prompt_tokens",
-    "generated_tokens",
-    "warmup_tokens",
-    "trials",
-    "budget",
-    "buffer_size",
-    "seed",
-]
+def required_fields():
+    schema = load_json(SCHEMA_PATH)
+    return schema.get("required", [])
 
 
-@pytest.mark.parametrize("missing_field", REQUIRED_FIELDS)
+@pytest.mark.parametrize("missing_field", required_fields())
 def test_missing_required_fields_are_rejected(missing_field):
     schema = load_json(SCHEMA_PATH)
+    Draft202012Validator.check_schema(schema)
+
     data = load_json(QWEN_RESULT_PATH)
     candidate = copy.deepcopy(data)
     candidate.pop(missing_field, None)
