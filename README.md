@@ -42,7 +42,8 @@ output = generate(model, **inputs, max_new_tokens=4096)
 | Greedy and sampled generation | Supported |
 | Beam search and batched generation | Not yet supported |
 | Sliding, chunked, and linear attention | Not yet supported |
-| vLLM backend and optimized GPU kernels | Not yet implemented |
+| vLLM integration | CPU-tested compaction planner; runtime patch pending |
+| Optimized GPU kernels | Not yet implemented |
 
 ## Policy quickstart
 
@@ -198,3 +199,6 @@ the launch criteria and current work packages.
 New contributors can start with a
 [`good first issue`](https://github.com/DaBestCode/randkv/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
 Read [`CONTRIBUTING.md`](CONTRIBUTING.md) before opening a pull request.
+
+The pinned vLLM boundary, runtime lifecycle, and unsupported-mode decisions are
+documented in [`docs/vllm-integration.md`](docs/vllm-integration.md).
