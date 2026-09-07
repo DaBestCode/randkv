@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/DaBestCode/randkv/schemas/benchmark-v1.schema.json",
+  "title": "Benchmark Result Schema v1",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schema_version",
+    "claim_scope",
+    "model",
+    "model_revision",
+    "device",
+    "runs",
+    "summary",
+    "kind",
+    "prompt_tokens",
+    "generated_tokens",
+    "warmup_tokens",
+    "trials",
+    "budget",
+    "buffer_size",
+    "seed"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "claim_scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "model": {
+      "type": "string",
+      "minLength": 1
+    },
+    "model_revision": {
+      "type": "string",
+      "minLength": 1
+    },
+    "device": {
+      "type": "string",
+      "minLength": 1
+    },
+    "runs": {
+      "type": "object",
+      "minProperties": 1
+    },
+    "summary": {
+      "type": "object"
+    },
+    "kind": {
+      "type": "string",
+      "minLength": 1
+    },
+    "prompt_tokens": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "generated_tokens": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "warmup_tokens": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "trials": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "budget": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "buffer_size": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "seed": {
+      "type": "integer"
+    }
+  }
+}
