@@ -1,4 +1,5 @@
 {
+  "protocol": "qwen3-microbenchmark-v1",
   "schema_version": 1,
   "kind": "single_request_transformers_microbenchmark",
   "claim_scope": "Local compatibility and adapter-overhead evidence only; not a vLLM serving or model-quality benchmark.",
