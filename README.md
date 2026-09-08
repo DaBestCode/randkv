@@ -112,6 +112,25 @@ The initial adapter intentionally supports batch size one, greedy/sampling
 generation, and full-attention decoder models only. Beam search and models with
 sliding, chunked, or linear-attention layers fail explicitly.
 
+### Transformers checkpoint compatibility
+
+The adapter's compatibility boundary is recorded separately from performance
+or model-quality claims. A checkpoint is **verified** only when the real smoke
+test has been run and its raw result is checked into [`results/`](results/).
+
+| Status | Checkpoint or family | Evidence / boundary |
+| --- | --- | --- |
+| Verified | `Qwen/Qwen3-0.6B` | Real Transformers smoke result on Apple M4; see [`results/README.md`](results/README.md). |
+| Verified | `HuggingFaceTB/SmolLM2-135M` | Real full-attention decoder smoke result with two or more eviction rounds; see [`results/README.md`](results/README.md). |
+| Expected, not individually verified | Other decoder-only Transformers checkpoints with full attention, batch size one, and a compatible `Cache` interface | This is an adapter-shape expectation, not a compatibility guarantee. Run a smoke test before relying on a checkpoint. |
+| Unsupported | Sliding-window, chunked, linear, or other hybrid-attention layers | The adapter rejects these attention modes explicitly. |
+| Unsupported | Beam search and batched generation | The initial adapter supports batch size one only. |
+
+The **expected** row must not be read as a test result: model configuration,
+attention layout, and Transformers integration details can still differ between
+families. Compatibility evidence is deliberately kept separate from throughput
+and quality evaluation.
+
 Run a real-checkpoint smoke test (downloads the model from Hugging Face):
 
 ```bash

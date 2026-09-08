@@ -40,3 +40,23 @@ model-quality evaluation, and it does not validate the paper's throughput claim.
 Within schema v1, additive optional fields remain compatible. Removing or
 renaming fields, or changing their semantic meaning, requires a new schema
 version.
+
+## SmolLM2-135M on Windows CPU
+
+- Result: [`smollm2-135m-smoke.json`](smollm2-135m-smoke.json)
+- Model revision: `93efa2f097d58c2a74874c7e644dbc9b0cee75a2`
+- Environment: Windows 11, AMD64, Python 3.13.5, PyTorch 2.14.0+cpu,
+  Transformers 5.16.1
+- Hardware: 13th Gen Intel Core i7-13620H, 13.0 GB RAM
+- Device: CPU
+- Prompt tokens: 11
+- Generated tokens: 128
+- Persistent budget `K`: 64
+- Buffer `r`: 8
+- Eviction rounds: 9 per layer
+- Final physical cache: 73 positions per layer
+
+This smoke run verifies the Transformers adapter against the
+`HuggingFaceTB/SmolLM2-135M` full-attention decoder configuration. It records
+compatibility and eviction behavior only; it is not a throughput comparison,
+quality evaluation, or claim about the model family as a whole.
