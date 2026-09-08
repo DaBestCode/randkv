@@ -70,12 +70,12 @@
       "minimum": 1
     },
     "budget": {
-      "type": "number",
-      "exclusiveMinimum": 0
+      "type": "integer",
+      "minimum": 1
     },
     "buffer_size": {
       "type": "integer",
-      "minimum": 1
+      "minimum": 0
     },
     "seed": {
       "type": "integer"
