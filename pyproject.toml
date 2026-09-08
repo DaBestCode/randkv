@@ -27,6 +27,7 @@ transformers = [
   "transformers>=5.16,<5.17",
 ]
 test = [
+  "jsonschema>=4.23",
   "mypy>=1.15",
   "pytest>=8.3",
   "ruff>=0.11",

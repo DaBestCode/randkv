@@ -1,5 +1,4 @@
 {
-  "protocol": "qwen3-microbenchmark-v1",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/DaBestCode/randkv/schemas/benchmark-v1.schema.json",
   "title": "Benchmark Result Schema v1",
@@ -8,7 +7,6 @@
   "required": [
     "schema_version",
     "claim_scope",
-    "protocol",
     "model",
     "model_revision",
     "device",
@@ -29,10 +27,6 @@
       "const": 1
     },
     "claim_scope": {
-      "type": "string",
-      "minLength": 1
-    },
-    "protocol": {
       "type": "string",
       "minLength": 1
     },

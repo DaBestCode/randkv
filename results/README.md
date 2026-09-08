@@ -34,3 +34,9 @@ This single-request Apple M4 measurement is compatibility and adapter-overhead
 evidence only. The current Python gather path is slower than dense generation in
 this test. It is not a vLLM serving benchmark, a CUDA-kernel benchmark, or a
 model-quality evaluation, and it does not validate the paper's throughput claim.
+
+## Schema compatibility
+
+Within schema v1, additive optional fields remain compatible. Removing or
+renaming fields, or changing their semantic meaning, requires a new schema
+version.
