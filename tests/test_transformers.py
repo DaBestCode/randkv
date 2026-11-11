@@ -163,3 +163,115 @@ class RandKVCacheGenerationTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class _CacheCapturingQwen3(Qwen3ForCausalLM):
+    """Tiny Qwen3 model that records the cache handed to ``generate``.
+
+    The public ``randkv.transformers.generate`` helper builds its cache
+    internally, so capturing the ``past_key_values`` argument is how a
+    test can inspect that cache afterwards.
+    """
+
+    def __init__(self, config: Qwen3Config) -> None:
+        super().__init__(config)
+        self.captured_cache: RandKVCache | None = None
+
+    def generate(self, *args, **kwargs):  # type: ignore[override]
+        cache = kwargs.get("past_key_values")
+        if isinstance(cache, RandKVCache):
+            self.captured_cache = cache
+        return super().generate(*args, **kwargs)
+
+
+# A tiny local "tokenizer": fixed character vocabulary, built in the
+# test so nothing is downloaded. Ids stay below the model's vocab_size.
+_CHAR_VOCAB = {ch: idx + 3 for idx, ch in enumerate("abcdefghijklmnopqrstuvwxyz .")}
+
+
+def _tokenize(text: str) -> torch.LongTensor:
+    return torch.tensor([[_CHAR_VOCAB[ch] for ch in text]], dtype=torch.long)
+
+
+class GenerateHelperEndToEndTests(unittest.TestCase):
+    """Offline CPU end-to-end generation through randkv.transformers.generate."""
+
+    PROMPT = "rand kv cache test"
+    BUDGET = 24
+    BUFFER = 4
+    MAX_NEW_TOKENS = 24
+
+    @staticmethod
+    def model() -> _CacheCapturingQwen3:
+        torch.manual_seed(1234)
+        config = Qwen3Config(
+            vocab_size=32,
+            hidden_size=32,
+            intermediate_size=64,
+            num_hidden_layers=2,
+            num_attention_heads=4,
+            num_key_value_heads=2,
+            head_dim=8,
+            max_position_embeddings=256,
+            bos_token_id=1,
+            eos_token_id=None,
+            pad_token_id=0,
+        )
+        return _CacheCapturingQwen3(config).eval()
+
+    def run_generation(self) -> tuple[_CacheCapturingQwen3, torch.Tensor, torch.Tensor]:
+        model = self.model()
+        inputs = _tokenize(self.PROMPT)
+        output = generate(
+            model,
+            inputs,
+            randkv_config=RandKVConfig(
+                budget=self.BUDGET, buffer_size=self.BUFFER, seed=42
+            ),
+            max_new_tokens=self.MAX_NEW_TOKENS,
+            do_sample=False,
+        )
+        return model, inputs, output
+
+    def test_end_to_end_generation_respects_cache_bound(self) -> None:
+        model, inputs, output = self.run_generation()
+        prompt_length = inputs.shape[-1]
+
+        # The full sequence comes back, prompt preserved.
+        self.assertEqual(output.shape, (1, prompt_length + self.MAX_NEW_TOKENS))
+        torch.testing.assert_close(output[:, :prompt_length], inputs)
+
+        cache = model.captured_cache
+        self.assertIsNotNone(cache)
+        assert cache is not None
+        stats = cache.stats()
+
+        # Absolute position tracking advances monotonically past the
+        # physical bound: every generated token except the last one has
+        # been fed back through the cache.
+        self.assertEqual(
+            stats.absolute_tokens_seen, prompt_length + self.MAX_NEW_TOKENS - 1
+        )
+        self.assertGreater(stats.absolute_tokens_seen, self.BUDGET + self.BUFFER)
+
+        # At least two eviction rounds per layer, and the physical cache
+        # never exceeds the configured budget + buffer bound.
+        for rounds in stats.eviction_rounds_per_layer:
+            self.assertGreaterEqual(rounds, 2)
+        for physical in stats.physical_tokens_per_layer:
+            self.assertLessEqual(physical, self.BUDGET + self.BUFFER)
+        self.assertGreater(stats.positions_evicted_total, 0)
+
+        # Retained positions per head: strictly increasing (monotonic),
+        # the prompt is fully protected, and the newest token is kept.
+        for layer in cache.layers:
+            self.assertIsInstance(layer, RandKVDynamicLayer)
+            for positions in layer.positions:
+                self.assertEqual(list(positions), sorted(set(positions)))
+                self.assertTrue(set(range(prompt_length)).issubset(positions))
+                self.assertEqual(positions[-1], stats.absolute_tokens_seen - 1)
+
+    def test_end_to_end_generation_is_deterministic(self) -> None:
+        _, _, first = self.run_generation()
+        _, _, second = self.run_generation()
+        torch.testing.assert_close(first, second)
